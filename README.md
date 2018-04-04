@@ -1,7 +1,7 @@
 Shapes
 =======
 
-Based on these three points this app draws:
+Based on three points this app draws:
 - A parallelogram, having three of its corners in the points selected by the user.
 - A circle, with the same area and centre of mass as the parallelogram.
 
