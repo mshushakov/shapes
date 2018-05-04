@@ -1,28 +1,25 @@
 // Helpers
-class Helpers {
-	static calc4thPoint(points) {
-		return {
-			x: points[0].x + (points[2].x - points[1].x),
-			y: points[0].y + (points[2].y - points[1].y),
-		}
-	}
-	static calcCenterPoint(points) {
-		return {
-			x: points[0].x + (points[2].x - points[0].x) / 2,
-			y: points[0].y + (points[2].y - points[0].y) / 2,
-		}
-	}
-	static calcArea(points) {
+const helpers = {
+	calc4thPoint: (points) => ({
+		x: points[0].x + (points[2].x - points[1].x),
+		y: points[0].y + (points[2].y - points[1].y),
+	}),
+	
+	calcCenterPoint: (points) => ({
+		x: points[0].x + (points[2].x - points[0].x) / 2,
+		y: points[0].y + (points[2].y - points[0].y) / 2,
+	}),
+
+	calcArea: (points) => {
 		const a = Math.sqrt(Math.pow(points[0].x- points[1].x, 2) + Math.pow(points[0].y - points[1].y, 2));
 		const b = Math.sqrt(Math.pow(points[0].x - points[3].x, 2) + Math.pow(points[0].y - points[3].y, 2));
 		const c = Math.sqrt(Math.pow(points[1].x - points[3].x, 2) + Math.pow(points[1].y - points[3].y, 2));
 		const p = (a + b + c) / 2;
 
 		return 2 * Math.sqrt(p * (p - a) * (p - b) * (p - c));
-	}
-	static calcRadius(points) {
-		return Math.sqrt(Helpers.calcArea(points) / Math.PI);
-	}
+	},
+
+	calcRadius: (points) => Math.sqrt(helpers.calcArea(points) / Math.PI)
 }
 
 const create = (tag, params) => {
@@ -31,12 +28,10 @@ const create = (tag, params) => {
 	return elem;
 }
 
-const offset = (elem, x, y) => {
-	return {
-		x: x - elem.getBoundingClientRect().x,
-		y: y - elem.getBoundingClientRect().y,
-	}
-}
+const offset = (elem, x, y) => ({
+	x: x - elem.getBoundingClientRect().x,
+	y: y - elem.getBoundingClientRect().y,
+})
 
 // App
 const svg = document.querySelector('svg');
@@ -50,9 +45,6 @@ const shapes = { // calculated shapes
 	polygon: create('polygon'),
 	circle: create('circle'),
 }
-
-svg.appendChild(shapes.polygon);
-svg.appendChild(shapes.circle);
 
 const hint = (elem, { x, y }, caption) => {
 	const hint = state.hints.has(elem) ? state.hints.get(elem) : create('text');
@@ -72,11 +64,11 @@ const update = () => {
 
 	if (state.points.size === 3) {
 		const points = Array.from(state.points.values());
-		points.push(Helpers.calc4thPoint(points));
+		points.push(helpers.calc4thPoint(points));
 		
-		const center = Helpers.calcCenterPoint(points);
-		const radius = Helpers.calcRadius(points);
-		const area = Helpers.calcArea(points);
+		const center = helpers.calcCenterPoint(points);
+		const radius = helpers.calcRadius(points);
+		const area = helpers.calcArea(points);
 		
 		shapes.polygon.setAttribute("points", points.map((point) => point.x + ' ' + point.y).join(','));
 		shapes.circle.setAttribute("cx", center.x);
@@ -135,3 +127,6 @@ svg.addEventListener('touchmove', dragMove);
 svg.addEventListener('mouseup', dragStop);
 svg.addEventListener('touchend', dragStop);
 svg.addEventListener('mouseleave', dragStop);
+
+svg.appendChild(shapes.polygon);
+svg.appendChild(shapes.circle);
